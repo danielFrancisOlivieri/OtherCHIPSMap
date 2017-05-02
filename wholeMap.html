@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+
+    <meta name="author" content="">
+
+    <link rel="icon" href="../../favicon.ico">
+
+
+
+    <title>Cassiope</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+	<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <link href="theme.css" rel="stylesheet">
+
+
+
+	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+
+
+  <link rel="stylesheet" href="stylesheets/normalize.css">
+  <link rel="stylesheet" href="stylesheets/stylesheet.css">
+  <link rel="stylesheet" href="stylesheets/github-light.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css">
+ <!--  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script> -->
+
+  <script src="leaflet-arrows.js"></script>
+  <script src="wind-scale.js"></script>
+
+
+
+	<style>
+
+		html, body {width:100%; height:100%; padding: 0; margin: 0;}
+
+		#cartodb-map {width: 100%; height:100%; background: black;}
+
+		#cartodb-map .cartodb-legend-stack {position: absolute; bottom: 90px; right: 10px;}
+
+
+    .onoffswitch {
+        position: relative; width: 90px;
+        margin-top: 5px;
+        -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+
+    }
+    .onoffswitch-checkbox {
+        display: none;
+    }
+    .onoffswitch-label {
+        display: block; overflow: hidden; cursor: pointer;
+        border: 2px solid #999999; border-radius: 20px;
+    }
+    .onoffswitch-inner {
+        display: block; width: 200%; margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+    }
+    .onoffswitch-inner:before, .onoffswitch-inner:after {
+        display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+        font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+        box-sizing: border-box;
+    }
+    .onoffswitch-inner:before {
+        content: "ON";
+        padding-left: 10px;
+        background-color: #34A7C1; color: #FFFFFF;
+    }
+    .onoffswitch-inner:after {
+        content: "OFF";
+        padding-right: 10px;
+        background-color: #EEEEEE; color: #999999;
+        text-align: right;
+    }
+    .onoffswitch-switch {
+        display: block; width: 18px; margin: 6px;
+        background: #FFFFFF;
+        position: absolute; top: 0; bottom: 0;
+        right: 56px;
+        border: 2px solid #999999; border-radius: 20px;
+        transition: all 0.3s ease-in 0s;
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+        margin-left: 0;
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+        right: 0px;
+    }
+
+.boxes
+{
+
+}
+
+	</style>
+
+	<style type="text/css">
+
+		.green {
+
+			background:#14b866;
+
+		}
+
+ </style>
+
+
+
+	<div id="map"></div>
+
+	<div id="cartodb-legend-stack"></div>
+
+<!-- includes toggle switch -->
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+	  <script>
+
+var multipleOn = true;
+
+// objects that allow multiple to be selected
+// mode of travel
+var seaSelected = {
+  isOn: false,
+  toAppend: "  mode_of_travel = 'Sea' "
+};
+var landSelected = {
+  isOn: false,
+  toAppend: "  mode_of_travel = 'Land' "
+};
+// language
+var latinSelected = {
+  isOn: false,
+  toAppend: "  language = 'Latin' "
+};
+var greekSelected = {
+  isOn: false,
+  toAppend: "  language = 'Greek' "
+};
+
+
+var geographySelected = {
+  isOn: false,
+  toAppend: "  genre = 'Geography' "
+};
+
+var biographySelected = {
+  isOn: false,
+  toAppend: "  genre = 'Biography' "
+};
+
+var philosophySelected = {
+  isOn: false,
+  toAppend: "  genre = 'Philosophy' "
+};
+
+var otherproseSelected = {
+  isOn: false,
+  toAppend: "  genre = 'Other Prose' "
+};
+
+var letterSelected = {
+  isOn: false,
+  toAppend: "  genre = 'Letter' "
+};
+
+
+
+var ciceroSelected = {
+  isOn: false,
+  toAppend: "  author = 'Cicero' "
+};
+
+var epictetusSelected = {
+  isOn: false,
+  toAppend: "  author = 'Epictetus' "
+};
+
+var galenSelected = {
+  isOn: false,
+  toAppend: "  author = 'Galen' "
+};
+
+var gelliusSelected = {
+  isOn: false,
+  toAppend: "  author = 'Gellius' "
+};
+
+var jeromeSelected = {
+  isOn: false,
+  toAppend: "  author = 'Jerome' "
+};
+
+var justinianSelected = {
+  isOn: false,
+  toAppend: "  author = 'Justinian' "
+};
+
+var straboSelected = {
+  isOn: false,
+  toAppend: "  author = 'Strabo' "
+};
+
+var suetoniusSelected = {
+  isOn: false,
+  toAppend: "  author = 'Suetonius' "
+};
+
+
+var unknownauthorSelected = {
+  isOn: false,
+  toAppend: "  author = 'Unknown' "
+};
+
+
+
+
+var allOptions = [seaSelected, landSelected, greekSelected, latinSelected, geographySelected, biographySelected, philosophySelected, otherproseSelected, letterSelected, ciceroSelected, epictetusSelected, galenSelected, gelliusSelected, jeromeSelected, justinianSelected, straboSelected, suetoniusSelected, unknownauthorSelected];
+
+var checkBoxIds = ["cicero", "epictetus", "galen", "gellius", "jerome", "justinian", "strabo", "suetonius", "unknownauthor", "biography", "geography", "letter", "otherprose", "philosophy", "greek", "latin", "land", "sea"];
+
+
+// turns the multiple on or off
+// when it is off it clears all selected
+function flipSwitch ()
+{
+  if (multipleOn === true)
+  {
+    console.log("now false");
+    multipleOn = false;
+
+  }
+  else {
+    {
+      multipleOn = true;
+        console.log("now true");
+        for (i = 0; i < allOptions.length; i++)
+        {
+          allOptions[i].isOn = false;
+          console.log( "setting them: " + allOptions[i].isOn);
+        }
+
+        // display
+        $(".boxes").css("display", "inline");
+    }
+  }
+}
+
+// this function appends an & statement to the sql call for each selected variable that is true
+function appendIfTrue(call, isSelected)
+{
+  if (isSelected.isOn === true)
+  {
+    var finalCall = call + isSelected.toAppend;
+    console.log("final call is: " + finalCall);
+    return finalCall;
+  }
+  else {
+    {
+      finalCall = call.replace(isSelected.toAppend, ' ');
+      finalCall = call.replace(isSelected.toAppend, ' '); // double is a kluge for if there happen to be two instances of the string
+      return finalCall;
+    }
+  }
+}
+
+function multipleSelected(sqlCall, multipleOn)
+{
+  if (multipleOn)
+  {
+  sqlCall = appendIfTrue(sqlCall, seaSelected);
+  sqlCall = appendIfTrue(sqlCall, landSelected);
+  sqlCall = appendIfTrue(sqlCall, latinSelected);
+  sqlCall = appendIfTrue(sqlCall, greekSelected);
+  return sqlCall;
+}
+else {
+  {
+    return sqlCall;
+  }
+}
+}
+
+    var map;
+
+    function init(){
+
+      // initiate leaflet map
+
+      map = new L.Map('cartodb-map', {
+
+		zoomControl: false,
+
+        center: [40,18],
+
+        zoom: 7
+
+      })
+
+
+
+
+	new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
+
+
+
+	var myLayers = L.tileLayer('http://{s}.tiles.mapbox.com/v4/gabrielleh.o10ic6ml/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZ2FicmllbGxlaCIsImEiOiJjaWdhd2toNXMxOWF6dmlseDRiem93bTI3In0.HZ7mExYcek13JU3nhgQVmQ', {
+
+  attribution: 'Mapbox <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'}).addTo(map);
+
+
+
+	myLayers.setOpacity(.5);
+
+
+
+	var layerUrl = 'https://olivierid.carto.com/api/v2/viz/b67f3b66-2f42-11e7-872d-0e3ff518bd15/viz.json';
+
+
+
+	var sublayers = [];
+
+
+
+		cartodb.createLayer(map, layerUrl)
+
+		.addTo(map)
+
+		.on('done', function(layer) {
+
+
+
+		var subLayerOptions = {
+
+      sql: "SELECT * FROM points_whole_all",
+
+      cartocss: "#points_whole_all{  line-pattern-file: url(https://cdn0.iconfinder.com/data/icons/navigation-set-arrows-part-one/32/DoubleChevronRight-128.png);	  line-width: 3;  line-opacity: 1;  line-dasharray: 5,5;} 	  #final_merge[author='Epictetus'] {  line-color: #3EA99F;} 	  #final_merge[author='Galen'] {line-color: #4E9258;} 	  #final_merge[author='Strabo'] {line-color: #52D017;}  	  #final_merge[author='Cicero'] {   line-color: #850200;} 	  #final_merge[author='Gellius'] {line-color: #F11810;} 	  #final_merge[author='Jerome'] {line-color: #e885ad; } 	  #final_merge[author='Justinian'] {line-color: #b780d1;} 	  #final_merge[author='Suetonius'] {line-color: #7B00B4;} 	  #final_merge[author='Unknown'] {line-color: #FFFFFF;}"    }
+
+
+
+    var sublayer = layer.getSubLayer(0);
+
+
+
+    sublayer.set(subLayerOptions);
+
+
+
+		sublayers.push(sublayer);
+
+		}).on('error', function() {
+
+			//log the error
+
+  });
+
+
+
+	var layer2Url = 'https://olivierid.carto.com/api/v2/viz/b67f3b66-2f42-11e7-872d-0e3ff518bd15/viz.json';
+
+
+
+	var sublayers2 = [];
+
+
+
+		cartodb.createLayer(map, layer2Url)
+
+		.addTo(map)
+
+		.on('done', function(layer) {
+
+
+
+		var subLayer2Options = {
+
+      sql: "SELECT * FROM points_whole_all",
+
+	  }
+
+
+
+    var sublayer2 = layer.getSubLayer(0);
+
+
+
+    sublayer2.set(subLayer2Options);
+
+
+
+		sublayers.push(sublayer2);
+
+		}).on('error', function() {
+
+			//log the error
+
+  });
+
+var genre, author, modeOfTravel, language;
+genre = "1=1";
+author = "1=1";
+authorList = [];
+genreList = [];
+modeOfTravelList = [];
+languageList = [];
+var masterCall = "SELECT * FROM points_whole_all WHERE 1=1 OR (" + genre + ") OR (" + author +  "  )";
+
+// creates the call
+function buildTheCall() {
+  console.log("A f() I wrote is actually working!!!" + authorList[0] + authorList[1]+ " length: " + authorList.length);
+
+arrayOfOptionToAddToCall = [];
+var ToAddToEndOfCall;
+// checks authorList length then builds its part of the call
+if (authorList.length > 0)
+{
+  author = authorList[0];
+
+  for (i = 1; i < authorList.length; i++)
+  {
+    author += " OR " + authorList[i];
+  }
+  author = " ( " + author + " )";
+
+  arrayOfOptionToAddToCall.push(author);
+}
+
+// checks genreList length then builds its part of the call
+if (genreList.length > 0)
+{
+  genre = genreList[0];
+
+  for (i = 1; i < genreList.length; i++)
+  {
+    genre += " OR " + genreList[i];
+  }
+    genre = " ( " + genre + " )";
+      arrayOfOptionToAddToCall.push(genre);
+}
+
+// checks languageList length then builds its part of the call
+if (languageList.length > 0)
+{
+  language = languageList[0];
+
+  for (i = 1; i < languageList.length; i++)
+  {
+    language += " OR " + languageList[i];
+  }
+    language = " ( " + language + " )";
+      arrayOfOptionToAddToCall.push(language);
+}
+
+
+
+// checks modeOfTravelList length then builds its part of the call
+if (modeOfTravelList.length > 0)
+{
+  modeOfTravel = modeOfTravelList[0];
+
+  for (i = 1; i < modeOfTravelList.length; i++)
+  {
+    modeOfTravel += " OR " + modeOfTravelList[i];
+  }
+    modeOfTravel = " ( " + modeOfTravel + " )";
+      arrayOfOptionToAddToCall.push(modeOfTravel);
+}
+
+
+
+if (arrayOfOptionToAddToCall.length > 0)
+{
+ToAddToEndOfCall = arrayOfOptionToAddToCall[0];
+
+for (i = 1; i < arrayOfOptionToAddToCall.length; i++)
+{
+  ToAddToEndOfCall += " AND " + arrayOfOptionToAddToCall[i];
+}
+}
+else {
+  ToAddToEndOfCall = "1=1";
+}
+
+masterCall = "SELECT * FROM points_whole_all WHERE " + ToAddToEndOfCall;
+sublayers[0].setSQL(masterCall);
+
+sublayers[1].setSQL(masterCall);
+
+console.log(masterCall);
+console.log(ToAddToEndOfCall);
+
+}
+
+   var LayerActions = {
+
+  all: function(){
+
+
+  masterCall = "SELECT * FROM points_whole_all WHERE 1=1 OR (" + genre + ") OR (" + author +  "  )";
+    sublayers[0].setSQL("SELECT * FROM points_whole_all WHERE 1=1");
+
+  sublayers[1].setSQL("SELECT * FROM points_whole_all WHERE 1=1");
+
+console.log("master: " + masterCall);
+  //buildTheCall();
+
+  // empty all lists
+  authorList = [];
+  genreList = [];
+  modeOfTravelList = [];
+  languageList = [];
+
+  for (i = 0; i < allOptions.length; i++)
+  {
+    allOptions[i].isOn = false;
+    console.log( "setting them: " + allOptions[i].isOn + "authorlist size: " + authorList.length);
+
+//var idToChange = "#" + allOptions[i];
+  //  $("#" + allOptions[i].name  ).prop('checked', false);
+$(".boxes").attr('checked', false);
+  }
+
+  return true;
+
+  },
+
+  letter: function(){
+
+        if (letterSelected.isOn === false)
+        {
+    letterSelected.isOn = true;
+    // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+    genreList.push(letterSelected.toAppend);
+       //  console.log("master: " + masterCall);
+       //  sublayers[0].setSQL(masterCall);
+       //  sublayers[1].setSQL(masterCall);
+
+       buildTheCall();
+        return true;
+        }
+        else {
+          letterSelected.isOn = false;
+
+    for (i = 0; i < genreList.length; i++)
+    {
+     if (genreList[i].includes(letterSelected.toAppend))
+     {
+       genreList.splice(i,1);
+     }
+    }
+
+       buildTheCall();
+    console.log("master: " + masterCall);
+          return false;
+        }
+  },
+
+  otherprose: function(){
+
+    if (otherproseSelected.isOn === false)
+    {
+  otherproseSelected.isOn = true;
+  // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+  genreList.push(otherproseSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      otherproseSelected.isOn = false;
+
+  for (i = 0; i < genreList.length; i++)
+  {
+  if (authorList[i].includes(otherproseSelected.toAppend))
+  {
+   genreList.splice(i,1);
+  }
+  }
+
+   buildTheCall();
+  console.log("master: " + masterCall);
+      return false;
+    }
+  },
+
+   biography: function(){
+
+     if (biographySelected.isOn === false)
+     {
+   biographySelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   genreList.push(biographySelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       biographySelected.isOn = false;
+
+   for (i = 0; i < genreList.length; i++)
+   {
+   if (authorList[i].includes(biographySelected.toAppend))
+   {
+    genreList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+   geography: function(){
+     if (geographySelected.isOn === false)
+     {
+   geographySelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   genreList.push(geographySelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       geographySelected.isOn = false;
+
+   for (i = 0; i < genreList.length; i++)
+   {
+   if (genreList[i].includes(geographySelected.toAppend))
+   {
+    genreList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+   philosophy: function(){
+
+     if (philosophySelected.isOn === false)
+     {
+   philosophySelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   genreList.push(philosophySelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       philosophySelected.isOn = false;
+
+   for (i = 0; i < genreList.length; i++)
+   {
+   if (authorList[i].includes(philosophySelected.toAppend))
+   {
+    genreList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+   greek: function(){
+
+     if (greekSelected.isOn === false)
+     {
+   greekSelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   languageList.push(greekSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       greekSelected.isOn = false;
+
+   for (i = 0; i < languageList.length; i++)
+   {
+   if (languageList[i].includes(greekSelected.toAppend))
+   {
+    languageList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+   latin: function()
+   {
+
+
+     if (latinSelected.isOn === false)
+     {
+   latinSelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   languageList.push(latinSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       latinSelected.isOn = false;
+
+   for (i = 0; i < languageList.length; i++)
+   {
+   if (languageList[i].includes(latinSelected.toAppend))
+   {
+    languageList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+
+  },
+
+  land: function(){
+
+     if (landSelected.isOn === false)
+     {
+   landSelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   modeOfTravelList.push(landSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       landSelected.isOn = false;
+
+   for (i = 0; i < modeOfTravelList.length; i++)
+   {
+   if (modeOfTravelList[i].includes(landSelected.toAppend))
+   {
+    modeOfTravelList.splice(i,1);
+   }
+   }
+
+    buildTheCall();
+   console.log("master: " + masterCall);
+       return false;
+     }
+
+
+  },
+
+  sea: function(){
+
+    if (seaSelected.isOn === false)
+    {
+  seaSelected.isOn = true;
+  // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+  modeOfTravelList.push(seaSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      seaSelected.isOn = false;
+
+  for (i = 0; i < modeOfTravelList.length; i++)
+  {
+  if (modeOfTravelList[i].includes(seaSelected.toAppend))
+  {
+   modeOfTravelList.splice(i,1);
+  }
+  }
+
+   buildTheCall();
+  console.log("master: " + masterCall);
+      return false;
+    }
+
+
+  },
+
+   cicero: function(){
+
+     if (ciceroSelected.isOn === false)
+     {
+ ciceroSelected.isOn = true;
+ // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(ciceroSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       ciceroSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+  if (authorList[i].includes(ciceroSelected.toAppend))
+  {
+    authorList.splice(i,1);
+  }
+}
+
+    buildTheCall();
+ console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+  epictetus: function(){
+
+    if (epictetusSelected.isOn === false)
+    {
+epictetusSelected.isOn = true;
+// sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(epictetusSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      epictetusSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+ if (authorList[i].includes(epictetusSelected.toAppend))
+ {
+   authorList.splice(i,1);
+ }
+}
+
+   buildTheCall();
+console.log("master: " + masterCall);
+      return false;
+    }
+
+  },
+
+  galen: function(){
+
+
+    if (galenSelected.isOn === false)
+    {
+galenSelected.isOn = true;
+// sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(galenSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      galenSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+ if (authorList[i].includes(galenSelected.toAppend))
+ {
+   authorList.splice(i,1);
+ }
+}
+
+   buildTheCall();
+console.log("master: " + masterCall);
+      return false;
+    }
+
+  },
+
+  gellius: function(){
+
+
+    if (gelliusSelected.isOn === false)
+    {
+gelliusSelected.isOn = true;
+// sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(gelliusSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      gelliusSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+ if (authorList[i].includes(gelliusSelected.toAppend))
+ {
+   authorList.splice(i,1);
+ }
+}
+
+   buildTheCall();
+console.log("master: " + masterCall);
+      return false;
+    }
+
+  },
+
+   jerome: function(){
+
+       if (jeromeSelected.isOn === false)
+       {
+   jeromeSelected.isOn = true;
+   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+   authorList.push(jeromeSelected.toAppend);
+      //  console.log("master: " + masterCall);
+      //  sublayers[0].setSQL(masterCall);
+      //  sublayers[1].setSQL(masterCall);
+
+      buildTheCall();
+       return true;
+       }
+       else {
+         jeromeSelected.isOn = false;
+
+   for (i = 0; i < authorList.length; i++)
+   {
+    if (authorList[i].includes(jeromeSelected.toAppend))
+    {
+      authorList.splice(i,1);
+    }
+   }
+
+      buildTheCall();
+   console.log("master: " + masterCall);
+         return false;
+       }
+
+  },
+
+  justinian: function(){
+
+
+    if (justinianSelected.isOn === false)
+    {
+justinianSelected.isOn = true;
+// sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(justinianSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      justinianSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+ if (authorList[i].includes(justinianSelected.toAppend))
+ {
+   authorList.splice(i,1);
+ }
+}
+
+   buildTheCall();
+console.log("master: " + masterCall);
+      return false;
+    }
+
+  },
+
+  strabo: function(){
+
+    if (straboSelected.isOn === false)
+    {
+straboSelected.isOn = true;
+// sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+authorList.push(straboSelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      straboSelected.isOn = false;
+
+for (i = 0; i < authorList.length; i++)
+{
+ if (authorList[i].includes(straboSelected.toAppend))
+ {
+   authorList.splice(i,1);
+ }
+}
+
+   buildTheCall();
+console.log("master: " + masterCall);
+      return false;
+    }
+
+  },
+
+   suetonius: function(){
+
+     if (suetoniusSelected.isOn === false)
+     {
+ suetoniusSelected.isOn = true;
+ // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+ authorList.push(suetoniusSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       suetoniusSelected.isOn = false;
+
+ for (i = 0; i < authorList.length; i++)
+ {
+  if (authorList[i].includes(suetoniusSelected.toAppend))
+  {
+    authorList.splice(i,1);
+  }
+ }
+
+    buildTheCall();
+ console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+   unknownauthor: function(){
+
+     if (unknownauthorSelected.isOn === false)
+     {
+ unknownauthorSelected.isOn = true;
+ // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+ authorList.push(unknownauthorSelected.toAppend);
+    //  console.log("master: " + masterCall);
+    //  sublayers[0].setSQL(masterCall);
+    //  sublayers[1].setSQL(masterCall);
+
+    buildTheCall();
+     return true;
+     }
+     else {
+       unknownauthorSelected.isOn = false;
+
+ for (i = 0; i < authorList.length; i++)
+ {
+  if (authorList[i].includes(unknownauthorSelected.toAppend))
+  {
+    authorList.splice(i,1);
+  }
+ }
+
+    buildTheCall();
+ console.log("master: " + masterCall);
+       return false;
+     }
+
+  },
+
+}
+
+
+
+
+
+  $('.button').click(function() {
+
+	$('.button').removeClass('green');
+
+	$(this).addClass('green');
+
+	LayerActions[$(this).attr('id')]();
+
+});
+
+
+
+}
+
+  </script>
+
+
+
+  </head>
+
+
+
+  <body role="document">
+
+
+
+  <body onload="init()">
+
+
+
+  <div id='cartodb-map'></div>
+
+
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+
+      <div class="container">
+
+        <div class="navbar-header">
+
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+
+            <span class="sr-only">Toggle navigation</span>
+
+            <span class="icon-bar"></span>
+
+            <span class="icon-bar"></span>
+
+            <span class="icon-bar"></span>
+
+          </button>
+
+          <a class="navbar-brand" href="#">Cassiope</a>
+
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav">
+
+            <li class="dropdown">
+
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Author <span class="caret"></span></a>
+
+              <ul class="dropdown-menu">
+
+			    <li><li><a href="#cicero" id="cicero" class="button cicero"> <input class = "boxes" type="checkbox" name="Sea" change = "cicero()" unchecked> Cicero</a></li>
+
+				<li><a href="#epictetus" id="epictetus" class="button epictetus"> <input class = "boxes" type="checkbox" name="Sea" change = "epictetus()" unchecked>  Epictetus</a></li>
+
+				<li><a href="#galen" id="galen" class="button galen"> <input class = "boxes" type="checkbox" name="Sea" change = "galen()" unchecked> Galen</a></li>
+
+				<li><a href="#gellius" id="gellius" class="button gellius"> <input class = "boxes" type="checkbox" name="Sea" change = "gellius()" unchecked> Gellius</a></li>
+
+				<li><a href="#jerome" id="jerome" class="button jerome"> <input class = "boxes" type="checkbox" name="Sea" change = "jerome()" unchecked> Jerome</a></li>
+
+				<li><a href="#justinian" id="justinian" class="button justinian"> <input class = "boxes" type="checkbox" name="Sea" change = "justinian()" unchecked> Justinian</a></li>
+
+				<li><a href="#strabo" id="strabo" class="button strabo"> <input class = "boxes" type="checkbox" name="Sea" change = "strabo()" unchecked> Strabo</a></li>
+
+				<li><a href="#suetonius" id="suetonius" class="button suetonius"> <input class = "boxes" type="checkbox" name="Sea" change = "suetonius()" unchecked> Suetonius</a></li>
+
+				<li><a href="#unknownauthor" id="unknownauthor" class="button unknownauthor"> <input class = "boxes" type="checkbox" name="Sea" change = "unknownauthor()" unchecked> Unknown</a></li>
+
+				<li role="separator" class="divider"></li>
+
+				<li><a href="#all" id="all" class="button all">All</a></li>
+
+              </ul>
+
+            </li>
+
+			<li class="dropdown">
+
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-multiselectable="true">Genre <span class="caret"></span></a>
+
+              <ul class="dropdown-menu">
+
+				<li><a href="#biography" name="genre" id="biography" class="button biography"> <input class = "boxes" type="checkbox" name="Sea" change = "biography()" unchecked> Biography</a></li>
+
+				<li><a href="#geography" name="genre" id="geography" class="button geography"> <input class = "boxes" type="checkbox" name="Sea" change = "geography()" unchecked> Geography</a></li>
+
+				<li><a href="#letter" name="genre" id="letter" class="button letter"> <input class = "boxes" type="checkbox" name="Sea" change = "letter()" unchecked> Letter</a></li>
+
+				<li><a href="#otherprose" name="genre" id="otherprose" class="button otherprose"> <input class = "boxes" type="checkbox" name="Sea" change = "otherprose()" unchecked> Other Prose</a></li>
+
+				<li><a href="#philosophy" name="genre" id="philosophy" class="button philosophy"> <input class = "boxes" type="checkbox" name="Sea" change = "philosophy()" unchecked> Philosophy</a></li>
+
+			    <li role="separator" class="divider"></li>
+
+				<li><a href="#all" id="all" class="button all">All</a></li>
+
+			   </ul>
+
+            </li>
+
+			<li class="dropdown">
+
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Language <span class="caret"></span></a>
+
+              <ul class="dropdown-menu">
+
+			    <li><a href="#greek" id="greek" class="button greek"> <input  class = "boxes" type="checkbox" name="Sea" change = "greek()" unchecked> Greek</a></li>
+
+				<li><a href="#latin" id="latin" class="button latin"> <input class = "boxes" type="checkbox" name="Sea" change = "latin()" unchecked> Latin</a></li>
+
+				<li role="separator" class="divider"></li>
+
+				<li><a href="#all" id="all" class="button all">All</a></li>
+
+              </ul>
+
+            </li>
+
+			<li class="dropdown">
+
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mode of Travel <span class="caret"></span></a>
+
+              <ul class="dropdown-menu">
+
+			    <li><a id="land" class="button land"> <input class = "boxes" type="checkbox" name="Sea" change = "land()" unchecked> Land</a></li>
+
+				<li><a href="#sea" id="sea" class="button sea"> <input class = "boxes" type="checkbox" name="Sea" value="Sea" change = "sea()" unchecked>  Sea</a></li>
+
+				<li role="separator" class="divider"></li>
+
+				<li><a href="#all" id="all" class="button all">All</a></li>
+
+              </ul>
+
+            </li>
+            <!--
+  <li class="dropdown">
+      <div class="onoffswitch" id="multipleSwitchDiv" tooltip = "this is a test" >
+          <input onchange = "flipSwitch()" type="checkbox" name="onoffswitch" value = "off" class="onoffswitch-checkbox" id="multipleSwitch" unchecked>
+          <label class="onoffswitch-label" for="multipleSwitch">
+              <span class="onoffswitch-inner"></span>
+              <span class="onoffswitch-switch"></span>
+          </label>
+      </div>
+    </li>
+  -->
+          </ul>
+        </div>
+
+      </div>
+
+    </nav>
+
+
+
+  </body>
+
+</html>
