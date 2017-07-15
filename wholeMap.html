@@ -18,7 +18,7 @@
 
 
 
-    <title>Cassiope</title>
+    <title>Corcyra</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
@@ -164,6 +164,11 @@ var geographySelected = {
 var biographySelected = {
   isOn: false,
   toAppend: "  genre = 'Biography' "
+};
+
+var historySelected = {
+  isOn: false,
+  toAppend: "  genre = 'History' "
 };
 
 var philosophySelected = {
@@ -331,7 +336,7 @@ else {
 
 
 
-	var layerUrl = 'https://olivierid.carto.com/api/v2/viz/b67f3b66-2f42-11e7-872d-0e3ff518bd15/viz.json';
+	var layerUrl = 'https://olivierid.carto.com/api/v2/viz/1634af88-3be5-11e7-8815-0ee66e2c9693/viz.json';
 
 
 
@@ -349,9 +354,9 @@ else {
 
 		var subLayerOptions = {
 
-      sql: "SELECT * FROM points_whole_all",
+      sql: "SELECT * FROM cassiope_and_corcyra_journey_finals_copy_merge",
 
-      cartocss: "#points_whole_all{  line-pattern-file: url(https://cdn0.iconfinder.com/data/icons/navigation-set-arrows-part-one/32/DoubleChevronRight-128.png);	  line-width: 3;  line-opacity: 1;  line-dasharray: 5,5;} 	  #final_merge[author='Epictetus'] {  line-color: #3EA99F;} 	  #final_merge[author='Galen'] {line-color: #4E9258;} 	  #final_merge[author='Strabo'] {line-color: #52D017;}  	  #final_merge[author='Cicero'] {   line-color: #850200;} 	  #final_merge[author='Gellius'] {line-color: #F11810;} 	  #final_merge[author='Jerome'] {line-color: #e885ad; } 	  #final_merge[author='Justinian'] {line-color: #b780d1;} 	  #final_merge[author='Suetonius'] {line-color: #7B00B4;} 	  #final_merge[author='Unknown'] {line-color: #FFFFFF;}"    }
+      cartocss: "#points_whole_all{  	  line-width: 3;  line-opacity: 1;  line-dasharray: 5,5;} 	  #final_merge[genre='History'] {  line-color: #3EA99F;} 	  #final_merge[genre='Letter'] {line-color: #4E9258;} 	  #final_merge[genre='Biography'] {line-color: #52D017;}  	  #final_merge[genre='Geography'] {   line-color: #850200;} 	  #final_merge[genre='Philosophy'] {line-color: #F11810;} 	  #final_merge[genre='Other Prose'] {line-color: #e885ad;}"    }
 
 
 
@@ -421,6 +426,8 @@ genreList = [];
 modeOfTravelList = [];
 languageList = [];
 var masterCall = "SELECT * FROM points_whole_all WHERE 1=1 OR (" + genre + ") OR (" + author +  "  )";
+var lineCall = "SELECT * FROM cassiope_and_corcyra_journey_finals_copy_merge WHERE 1=1 OR (" + genre + ") OR (" + author +  "  )";
+
 
 // creates the call
 function buildTheCall() {
@@ -499,11 +506,16 @@ else {
 }
 
 masterCall = "SELECT * FROM points_whole_all WHERE " + ToAddToEndOfCall;
-sublayers[0].setSQL(masterCall);
+
+lineCall = "SELECT * FROM cassiope_and_corcyra_journey_finals_copy_merge WHERE " + ToAddToEndOfCall;
+
+
+sublayers[0].setSQL(lineCall);
 
 sublayers[1].setSQL(masterCall);
 
 console.log(masterCall);
+console.log(lineCall);
 console.log(ToAddToEndOfCall);
 
 }
@@ -514,7 +526,8 @@ console.log(ToAddToEndOfCall);
 
 
   masterCall = "SELECT * FROM points_whole_all WHERE 1=1 OR (" + genre + ") OR (" + author +  "  )";
-    sublayers[0].setSQL("SELECT * FROM points_whole_all WHERE 1=1");
+
+    sublayers[0].setSQL("SELECT * FROM cassiope_and_corcyra_journey_finals_copy_merge WHERE 1=1");
 
   sublayers[1].setSQL("SELECT * FROM points_whole_all WHERE 1=1");
 
@@ -608,11 +621,9 @@ $(".boxes").attr('checked', false);
      if (biographySelected.isOn === false)
      {
    biographySelected.isOn = true;
-   // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+
    genreList.push(biographySelected.toAppend);
-    //  console.log("master: " + masterCall);
-    //  sublayers[0].setSQL(masterCall);
-    //  sublayers[1].setSQL(masterCall);
+
 
     buildTheCall();
      return true;
@@ -622,7 +633,7 @@ $(".boxes").attr('checked', false);
 
    for (i = 0; i < genreList.length; i++)
    {
-   if (authorList[i].includes(biographySelected.toAppend))
+   if (genreList[i].includes(biographySelected.toAppend))
    {
     genreList.splice(i,1);
    }
@@ -641,9 +652,7 @@ $(".boxes").attr('checked', false);
    geographySelected.isOn = true;
    // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
    genreList.push(geographySelected.toAppend);
-    //  console.log("master: " + masterCall);
-    //  sublayers[0].setSQL(masterCall);
-    //  sublayers[1].setSQL(masterCall);
+
 
     buildTheCall();
      return true;
@@ -665,6 +674,37 @@ $(".boxes").attr('checked', false);
      }
 
   },
+
+  history: function(){
+    if (historySelected.isOn === false)
+    {
+  historySelected.isOn = true;
+  // sqlCall = "SELECT * FROM points_whole_all WHERE mode_of_travel = 'Sea'";
+  genreList.push(historySelected.toAppend);
+   //  console.log("master: " + masterCall);
+   //  sublayers[0].setSQL(masterCall);
+   //  sublayers[1].setSQL(masterCall);
+
+   buildTheCall();
+    return true;
+    }
+    else {
+      historySelected.isOn = false;
+
+  for (i = 0; i < genreList.length; i++)
+  {
+  if (genreList[i].includes(historySelected.toAppend))
+  {
+   genreList.splice(i,1);
+  }
+  }
+
+   buildTheCall();
+  console.log("master: " + masterCall);
+      return false;
+    }
+
+ },
 
    philosophy: function(){
 
@@ -1180,7 +1220,7 @@ console.log("master: " + masterCall);
 
           </button>
 
-          <a class="navbar-brand" href="#">Cassiope</a>
+          <a class="navbar-brand" href="#">Corcyra</a>
 
         </div>
 
@@ -1229,6 +1269,8 @@ console.log("master: " + masterCall);
 				<li><a href="#biography" name="genre" id="biography" class="button biography"> <input class = "boxes" type="checkbox" name="Sea" change = "biography()" unchecked> Biography</a></li>
 
 				<li><a href="#geography" name="genre" id="geography" class="button geography"> <input class = "boxes" type="checkbox" name="Sea" change = "geography()" unchecked> Geography</a></li>
+
+        <li><a href="#history" name="genre" id="history" class="button history"> <input class = "boxes" type="checkbox" name="Sea" change = "history()" unchecked> History</a></li>
 
 				<li><a href="#letter" name="genre" id="letter" class="button letter"> <input class = "boxes" type="checkbox" name="Sea" change = "letter()" unchecked> Letter</a></li>
 
